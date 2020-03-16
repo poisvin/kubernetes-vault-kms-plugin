@@ -59,7 +59,7 @@ type EnvelopeConfig struct {
 }
 
 // KMSFactory function creates Vault KMS service
-func KMSFactory(configFile io.Reader) (*VaultEnvelopeService, error) {
+func KMSFactory(configFile io.Reader, token string) (*VaultEnvelopeService, error) {
 	configFileContents, err := ioutil.ReadAll(configFile)
 	if err != nil {
 		return nil, fmt.Errorf("could not read contents: %v", err)
@@ -69,6 +69,10 @@ func KMSFactory(configFile io.Reader) (*VaultEnvelopeService, error) {
 	err = yaml.Unmarshal(configFileContents, &config)
 	if err != nil {
 		return nil, fmt.Errorf("error while parsing file: %v", err)
+	}
+
+	if len(token) !=0 {
+		config.Token = token
 	}
 
 	err = validateConfig(&config)
