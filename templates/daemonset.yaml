@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: kms-plugin
+  namespace: {{ .Values.namespace }}
+  labels:
+    k8s-app: secret-management
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      name: kms-plugin
+  template:
+    metadata:
+      labels:
+        name: kms-plugin
+    spec:
+      tolerations:
+        {{ toYaml .Values.tolerations }}
+      containers:
+      - name: kms-plugin
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          {{ toYaml .Values.resources }}
+        volumeMounts:
+        - name: socket-path
+          mountPath: /var/run/kmsplugin
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: socket-path
+        hostPath:
+          path: /var/run/kmsplugin
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+        {{ toYaml .Values.nodeSelector}}
+      {{- end }}

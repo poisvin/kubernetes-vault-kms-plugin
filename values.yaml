@@ -1,0 +1,23 @@
+namespaces: kube-system
+
+image:
+  repository: image
+  tag: 1.0
+  pullPolicy: always
+
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+  #- key: "node-role.kubernetes.io/master"
+  #  effect: "NoSchedule"
+  # operator: "equal"
+  # value: "true"
