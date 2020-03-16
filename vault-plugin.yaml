@@ -1,0 +1,6 @@
+keyNames:
+  - my-key
+transitPath: /transit
+#ca-cert: /home/me/ca.cert
+addr: https://vault.ananthkamath.dev:8200
+token: s.GsX2Ml2ska8BCS7SrEzmvFWB
