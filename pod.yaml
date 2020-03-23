@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vault-kms-encryption-provider
+  namespace: kube-system
+  labels:
+    kubernetes.io/cluster-service: "true"
+spec:
+  serviceAccountName: vault-auth
+  initContainers:
+    # Vault container
+    - name: vault-agent-auth
+      image: vault
+
+      volumeMounts:
+        - name: config
+          mountPath: /etc/vault
+        - name: vault-token
+          mountPath: /home/vault
+
+      # This assumes Vault running on local host and K8s running in Minikube using VirtualBox
+      env:
+        - name: VAULT_ADDR
+          value: https://vault.example.com
+
+      # Run the Vault agent
+      args:
+        [
+          "agent",
+          "-config=/etc/vault/vault-agent-config.hcl",
+          #"-log-level=debug",
+        ]
+  containers:
+  - image: user-name/vault-kms-plugin:tag
+    imagePullPolicy: Always
+    name: vault-kms-encryption-provider
+    ports:
+    # - containerPort: 8080
+    #   protocol: TCP
+    # livenessProbe:
+    #   httpGet:
+    #     path: /healthz
+    #     port: 8080
+    volumeMounts:
+    - mountPath: /var/run/kmsplugin
+      name: var-run-kmsplugin
+    - mountPath: /home/vault
+      name: vault-token
+  volumes:
+  - name: var-run-kmsplugin
+    hostPath:
+      path: /var/run/kmsplugin
+      type: DirectoryOrCreate
+  - name: vault-token
+    emptyDir:
+      medium: Memory
+  - name: config
+    configMap:
+      name: example-vault-agent-config
+      items:
+        - key: vault-agent-config.hcl
+          path: vault-agent-config.hcl
+  tolerations:
+  - key: "node-role.kubernetes.io/controlplane"
+    operator: "Equal"
+    value: "true"
+    effect: "NoSchedule"
+  - key: "node-role.kubernetes.io/etcd"
+    operator: "Equal"
+    value: "true"
+    effect: "NoExecute"

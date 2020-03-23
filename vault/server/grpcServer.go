@@ -11,12 +11,12 @@ import (
 	log "github.com/sirupsen/logrus"
 	"net"
 	"os"
-	"string"
+	"strings"
 	"io/ioutil"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-        pb "k8s.io/apiserver/pkg/storage/value/encrypt/envelope/v1beta1"
-	"github.com/oracle/kubernetes-vault-kms-plugin/vault"
+  pb "k8s.io/apiserver/pkg/storage/value/encrypt/envelope/v1beta1"
+	"github.com/poisvin/kubernetes-vault-kms-plugin/vault"
 	"golang.org/x/sys/unix"
 )
 
@@ -78,7 +78,7 @@ func parseCmd() CommandArgs {
   cmdArgs := CommandArgs{
 		socketFile:            *socketFile,
 		vaultConfig:           *vaultConfig,
-		cmdArgs.tokenFile 		 *tokenFile
+		tokenFile:				 		 *tokenFile,
 	}
 
 	return cmdArgs
@@ -96,7 +96,7 @@ func main() {
 		if tokenerr != nil {
 			log.Fatalf(" failed to read token file")
 		}
-		token := string.TrimSuffix(string(tokenFileContents), "\n")
+		token = strings.TrimSuffix(string(tokenFileContents), "\n")
 	}
 
 	// TODO clean sock file first

@@ -1,0 +1,4 @@
+keyNames:
+  - my-key
+transitPath: /transit
+addr: https://vault.example.com:8200
