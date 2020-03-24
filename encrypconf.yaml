@@ -1,0 +1,21 @@
+kube-api:
+      always_pull_images: false
+      extra_binds:
+        - '/var/run/kmsplugin/:/var/run/kmsplugin/'
+      pod_security_policy: false
+      secrets_encryption_config:
+        enabled: true
+        custom_config:
+          apiVersion: apiserver.config.k8s.io/v1
+          kind: EncryptionConfiguration
+          resources:
+          - resources:
+            - secrets
+            providers:
+            - kms:
+                name: aws-encryption-provider
+                endpoint: unix:///var/run/kmsplugin/socket.sock
+                cachesize: 1000
+                timeout: 3s
+            - identity: {}
+      service_node_port_range: 30000-32767
